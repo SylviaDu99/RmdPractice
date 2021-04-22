@@ -1,0 +1,189 @@
+<!--- Begin styling code. --->
+<style type="text/css">
+/* Whole document: */
+body{
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 12pt;
+}
+h1.title {
+  font-size: 38px;
+  text-align: center;
+}
+h4.author {
+  font-size: 18px;
+  text-align: center;
+}
+h4.date {
+  font-size: 18px;
+  text-align: center;
+}
+</style>
+<!--- End styling code. --->
+
+---
+title: "Short Lab 3"
+author: "Sylvia Du"
+date: "2/3/2020"
+output: html_document
+---
+
+As usual, all code below should follow the style guidelines from the lecture slides.
+
+## Part 1. Read in text data
+
+For this short lab, we will be using Project Gutenberg’s The Complete Works of William Shakespeare. 
+Use the command `read_lines()` to read the text available at
+"https://www.gutenberg.org/files/100/100-0.txt".
+Make sure to store the text as a variable.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# import libraries that are needed in this shortlab
+library(tidyverse)
+library(lubridate)
+
+# store the data from the website into a variable
+my_data <- read_lines("https://www.gutenberg.org/files/100/100-0.txt")
+```
+
+
+**1a.** Print the first 5 lines.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# to print out first 5 elements (lines) of data
+my_data %>%
+  head(5)
+```
+
+**1b.** Print the total number of lines.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# print the number of elements (lines) of the data
+length(my_data)
+```
+
+**1c.** Remove all empty lines, then print the total number of lines.
+
+(*Hint: to remove empty elements from a string vector x, you could use* `x <- x[x != ""]`)
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# clear all empty elements from data and print the length of data
+my_data <- my_data[my_data != ""]
+length(my_data)
+```
+
+
+## Part 2. Regular expressions
+
+**2a.** Use a regular expression with `str_count()` to count how much punctuation is in this text file, in total.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# print the sum of all punctuations in the data
+sum(str_count(my_data, "[,.?';:!#*-`]"))
+```
+
+**2b.** Use a regular expression with `str_detect()` to count how many lines contain *either* the string "Romeo" or "Juliet".
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# count the number of elements containing Romeo or Juliet
+str_detect(my_data, "Romeo|Juliet") %>% 
+  as.numeric %>%
+  sum()
+```
+
+
+## Part 3. String Manipulation
+
+**3a.** Use `str_c()` to collapse the Shakespeare string vector into one large string. (Don't try to print it!)
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# collapse the data into a single string 
+my_long <- str_c(my_data, collapse = " ")
+```
+
+**3b.** Use `str_split()` to separate your string into words.
+
+(*Hint: you might get a list of length 1 that you have to convert to a vector. You could do this by using something like *`x <- unlist(x)` *or* `x <- x[[1]]`)
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# split the string into words stored in a vector of strings
+my_words <- unlist(str_split(my_long, " "))
+```
+
+**3c.** Use a combination of `table()` and `sort(..., decreasing = TRUE)` argument to get a count of the unique words in Shakespeare's complete works and print out the 10 most common words.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# count the number of each unique word and sort the by most used, print first 10
+my_table <- sort(table(my_words), decreasing = TRUE)
+my_table %>%
+  head(10)
+```
+
+
+## Part 4. Factors
+
+**4a.** Create an object that is a factor vector with 4 levels, where each of these levels is observed at least once.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# construct my factor with levels a, b, c, d and each observed once
+my_factor <- factor(c("a", "b", "c", "d"), levels = c("a", "b", "c", "d"))
+```
+
+**4b.** Collapse two of your factor levels together into a new level "x".
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# collapsee levels a and b into new level x
+my_factor <- fct_collapse(my_factor, x = c("a", "b"))
+```
+
+**4c.** Add a new, empty level to your factor and print out the vector.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# add a new empty level e to my_factor and print out my_factor
+my_factor <- fct_expand(my_factor, "e")
+my_factor
+```
+
+**4d.** Remove this empty level from your factor and print out the vector.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# drop empty level e from my_factor and print my_factor
+my_factor <- fct_drop(my_factor, only = "e")
+my_factor
+```
+
+
+## Part 5. Dates
+
+**5a.** Create a date-time object in R, with both a date and a time.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# creat a date-time object x with date of today and time of (approximately) now
+x <- mdy_hms("Feb 1st 2020, 14:40:00")
+```
+
+**5b.** Extract the date from your object.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# create a new variable d equals to the date of x
+d <- date(x)
+```
+
+**5c.** Extract the month from your object.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# create a new variable m equals to the month of x
+m <- month(x)
+```
+
+**5d.** Change the hour of your object, then extract the hour from your object.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# change the hour of x into 20 and create a new variable h equals to the hour 
+# of x
+hour(x) <- 20
+h <- hour(x)
+```
+
+
+
+

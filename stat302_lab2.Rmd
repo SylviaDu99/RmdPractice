@@ -1,0 +1,157 @@
+---
+title: "Stat302 Lab2"
+author: "Sylvia Du"
+date: "1/20/2020"
+output: html_document
+---
+
+## Part1.
+
+#1a.
+```{r, eval = TRUE, echo = TRUE}
+# function: hard_hold, take in a numeric input and a threshold, if absolute 
+#           value of input is smaller than threshold, change value to 0, else, 
+#           remain value unchanged
+# input: numeric vector x, numeric number lambda
+# output: numeric vector y
+hard_hold <- function(x, lambda) {
+    # test if input is numeric
+    if (!is.numeric(x) || !is.numeric(lambda)) {
+        cat("input must be numeric")
+    } else {
+        y <- rep(NA, length(x))
+        for (i in 1:length(x)) {
+            if (abs(x[i]) < lambda) {
+                y[i] <- 0
+            } else {
+                y[i] <- x[i]
+            }
+        }
+        return(y)
+    }
+}
+```
+
+#1b.
+```{r, eval = TRUE, echo = TRUE}
+# 
+hard_hold(c(-5, -3, 0, 3, 5), 4)
+```
+
+#1c.
+```{r, eval = TRUE, echo = TRUE}
+hard_hold(c(-5, -3, 0, 3, 5), 2)
+```
+
+#2a.
+```{r, eval = TRUE, echo = TRUE}
+# function: soft_hold, take in a numeric input and a threshold, if absolute 
+#           value of input is smaller than threshold, change value to 0, else, 
+#           change value to absolute value of input minus lambda, with the
+#           original sign of value remain unchanged
+# input: numeric vector x, numeric number lambda
+# output: numeric vector y
+soft_hold <- function(x, lambda) {
+    # test if input is numeric
+    if (!is.numeric(x) || !is.numeric(lambda)) {
+        cat("input must be numeric")
+    } else {
+        y <- rep(NA, length(x))
+        for (i in 1:length(x)) {
+            if (abs(x[i]) < lambda) {
+                y[i] <- 0
+            } else {
+                y[i] <- sign(x[i]) * (abs(x[i]) - lambda)
+            }
+        }
+        return(y)
+    }
+}
+```
+
+#2b.
+```{r, eval = TRUE, echo = TRUE}
+soft_hold(c(-5, -3, 0, 3, 5), 4)
+```
+
+#2c.
+```{r, eval = TRUE, echo = TRUE}
+soft_hold(c(-5, -3, 0, 3, 5), 2)
+```
+
+
+## Part2.
+```{r, eval = TRUE, echo = TRUE}
+linearMod <- lm(dist ~ speed, data = cars) 
+```
+
+#3a.
+The names of linearMod are: "coefficients", "residuals", "effects", "rank",
+"fitted.values", "assign", "qr", "df.residual", "xlevels", "call", "terms",
+"model"
+```{r, eval = TRUE, echo = TRUE}
+names(linearMod)
+```
+
+#3b.
+```{r, eval = TRUE, echo = TRUE}
+lM_coefficients_quote <- linearMod[["coefficients"]]
+lM_coefficients_dollar <- linearMod$coefficients
+
+lM_coefficients_quote
+lM_coefficients_dollar
+```
+
+## Part3.
+
+#4.
+```{r, eval = TRUE, echo = TRUE}
+my_data <- data.frame("var1" = c(1, 2, 3),
+                      "var2" = c("a", "b", "c"),
+                      "var3" = c(TRUE, TRUE, FALSE),
+                      row.names = c("obs1", "obs2", "obs3"),
+                      stringsAsFactors = FALSE)
+my_data
+```
+
+#5.
+```{r, eval = TRUE, echo = TRUE}
+library(kableExtra)
+weather <- data.frame("station" = rep(c("A", "B", "C"), each = 4),
+                      "element" = rep(c("temp_min", "temp_max"), 2),
+                      "month1"  = c(11.4, 25.6, NA, NA, 17.7, 28.0,
+                                    NA, NA, 20.0, 24.9, NA, NA),
+                      "month2"  = c(NA, NA, 16.8, 28.7, NA, NA,
+                                    11.1, 26.8, NA, NA, 14.7, 33.4),
+                      stringsAsFactors = FALSE)
+kable_styling(kable(weather))
+```
+
+#5a.
+The 4 variables are "station", "element", "month1", "month2", there are 12
+observations
+```{r, eval = TRUE, echo = TRUE}
+str(weather)
+```
+
+#5b.
+```{r, eval = TRUE, echo = TRUE}
+# omit the NAs in the observations, and combine the min and max values of
+# month1 and month2 together respectively.
+my_month1 <- na.omit(weather$month1)
+my_month2 <- na.omit(weather$month2)
+my_station <- rep(c("A", "B", "C"), each = 2)
+my_weather <- data.frame("station" = my_station,
+                         "element" = rep(c("temp_min", "temp_max"), 3),
+                         "month1" = my_month1,
+                         "month2" = my_month2,
+                         stringsAsFactors = FALSE)
+rownames(my_weather) <- c("Obs1", "Obs2", "Obs3", "Obs4", "Obs5", "Obs6")
+kable_styling(kable(my_weather))
+```
+
+
+
+
+
+

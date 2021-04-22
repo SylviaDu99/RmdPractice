@@ -1,0 +1,118 @@
+---
+title: "Lab 4"
+author: "Sylvia Du, collaborated with Dairong Han"
+date: "3/2/20"
+output: html_document
+---
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# import libraries and data set that are needed in this lab
+library(tidyverse)
+library(stringr)
+library(class)
+library(randomForest)
+data(iris)
+```
+
+## Part 1. k-Nearest Neighbors Cross-Validation
+
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# function: my_knn_cv, predict the class value cl by k-fold Cross-validation
+#           and k-nearest neighbors algorithms
+# input: data frame train, class value cl, integer of the number of neighbors 
+#        k_nn, integer of the number of folds k_cv
+# output: a list object of result output
+my_knn_cv <- function(train, cl, k_nn, k_cv) {
+    ## Split data in k_cv parts, randomly
+    set.seed(302)
+    fold <- sample(rep(1:k_cv, length = length(cl)))
+    data <- data.frame("x" = train, "y" = cl, "split" = fold)
+    class <- c()
+    cv_err <- rep(NA, k_cv)
+    fold_l <- length(cl) / k_cv
+    ## Iterate through i = 1 to k_cv
+    for (i in 1:k_cv) {
+        ## Predict class value of the ith fold using all other folds as 
+        ## training data
+        data_train <- data %>% filter(split != i)
+        data_test <- data %>% filter(split == i)
+        y_hat <- as.character(knn(data_train[, 1:4], data_test[, 1:4], 
+                                  data_train$y, k_nn))
+        class <- c(class, y_hat)
+        ## Record the prediction and the misclassification rate
+        cv_err[i] = sum(as.numeric(y_hat != as.character(data_test$y))) / fold_l
+    }
+    y_hat <- as.character(knn(train[, 1:4], train[, 1:4], cl, k_nn))
+    train_err = sum(as.numeric(y_hat != as.character(cl))) / length(cl)
+    ## Store the vector class as the output of knn() with the full data as both 
+    ## the training and the test data, and the value cv_error as the average 
+    ## misclassification rate
+    output <- list("class" = class, "cv_err" = mean(cv_err), "te" = train_err)
+    return(output)
+}
+
+## Apply the function to 5-fold cross validation(k_cv = 5), k_nn = 1 or k_nn = 5
+## to predict output class Species using covariates Sepal.Length, Sepal.Width, 
+## Petal.Length, and Petal.Width 
+k_1 <- my_knn_cv(iris[, 1:4], iris$Species, 1, 5)
+k_5 <- my_knn_cv(iris[, 1:4], iris$Species, 5, 5)
+a <- data.frame(cbind(c(k_1$cv_err, k_5$cv_err), c(k_1$te, k_5$te)), 
+           row.names = c("knn = 1", "knn = 5"))
+colnames(a) = c("cv_err", "train_err")
+t(a)
+```
+
+In this case, for knn = 1, training error is always 0 and cv_error is about 0.04; for knn = 5, training error is about 0.03 and cv_error is about 0.02. In general (fold would be set random), knn = 1 has lower training error which always equal to 0 and both cases have a chance of getting lower cv_error while both are about 0.03.
+
+
+## Part 2. Random Forest Cross-Validation
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# function: my_rf_cv, predict the class value cl by k-fold Cross-validation
+#           and random forest algorithms
+# input: integer of the number of folds k
+# output: a double of mean of mse for all folds output
+my_rf_cv <- function(k) {
+    ## Split data in k parts, randomly
+    l <- length(iris$Species)
+    fold <- sample(rep(1:k, length = l))
+    data <- data.frame(iris, "split" = fold)
+    mse <- c()
+    ## Iterate through i = 1 to k
+    for (i in 1:k) {
+        ## Define the training data as all the data not in the ith fold
+        data_train <- data %>% filter(split != i)
+        data_test <- data %>% filter(split == i)
+        ## Train a random forest model with 100 trees to predict Sepal.Length 
+        ## using covariates Sepal.Width, Petal.Length, and Petal.Width
+        my_model <- randomForest(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width, data = data_train, ntree = 100)
+        ## Predict the Sepal.Length of the ith fold which was used as test data
+        my_pred <- predict(my_model, data_test[, 2:4])
+        ## Evaluate the MSE, the average squared difference between predicted 
+        ## Sepal.Length and true Sepal.Length 
+        mse <- c(mse, mean((my_pred - iris$Sepal.Length)^2))
+    }
+    output <- mean(mse)
+    return(output)
+}
+rk_5 <- my_rf_cv(5)
+rk_5
+```
+The CV MSE is about 1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

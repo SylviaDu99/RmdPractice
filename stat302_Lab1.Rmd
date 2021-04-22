@@ -1,0 +1,318 @@
+---
+title: "Lab 1"
+author: "Sylvia Du"
+date: "1/13/20"
+output: html_document
+---
+
+## Part 1. Vectors
+
+
+#1a.
+```{r, eval = TRUE, echo = TRUE}
+# use rnorm to generate a random Norma distribution of 100000 elements and store
+# them in a vector. print out the first 5 elements of the vector.
+randNorm <- c(rnorm(100000, 7, 3))
+head(randNorm, 5)
+```
+#1b.
+The larger the sample size gets, the more likely that the distribution of the 
+data on the histogram would be bell-shaped. This is because the more element we
+take, the more likely the data would be in Normal distribution as expected and
+the less likely that the outliers would effect the resulting distribution.
+```{r, eval = TRUE, echo = TRUE}
+# generate 5 histograms of the first 10, 100, 1000, 10000, 100000 elements of 
+# the vector respectively.
+tenth <- head(randNorm, 10)
+hist(tenth, main = paste("First 10 elements of vector"), xlab = "value")
+hundred <- head(randNorm, 100)
+hist(hundred, main = paste("First 100 elements of vector"), xlab = "value")
+thousand <- head(randNorm, 1000)
+hist(thousand, main = paste("First 1000 elements of vector"), xlab = "value")
+tenthou <- head(randNorm, 10000)
+hist(tenthou, main = paste("First 10000 elements of vector"), xlab = "value")
+hist(randNorm, main = paste("All elements of vector"), xlab = "value")
+```
+
+#1c.
+
+```{r, eval = TRUE, echo = TRUE}
+# standardize the vector of random elements and store the elements in a new 
+# vector. generate a histogram of the standarized vector.
+total_sd <- (randNorm - mean(randNorm)) / sd(randNorm)
+m_rN <- mean(total_sd)
+sd_rN <- sd(total_sd)
+hist(total_sd, main = paste("All elements of standarized vector"),
+     xlab = "value")
+```
+
+The distribution of the histogram is bell-shaped and similar with the histogram
+of the original vector but with mean of `r m_rN` (about 0) and standard
+deviation of `r sd_rN` (about 1).
+
+
+#1d.
+
+```{r, eval = TRUE, echo = TRUE}
+# calculate the percent of simulations from expected Normal(0, 1) and from my
+# randomly generated Normal distribution that are above 1.644854 respectively.
+percentile <- pnorm(1.644854, mean = 0, sd = 1, lower.tail = FALSE,
+                    log.p = FALSE)
+my_percentile <- mean(total_sd > 1.644854)
+```
+
+The expected percentile to be above 1.644854 of Normal(0, 1) is `r percentile`.
+The observed percentile to be above 1.644854 of my standarized simulations is
+`r my_percentile`. My observed percentile is slightly greater than the expected
+percentile.
+
+#1e.
+```{r, eval = TRUE, echo = TRUE}
+# calculate the percent of elements that are above 1.644854 of the first 10, 
+# 100, 1000, 10000 elements of the standarized vector respectively.
+ten_sd <- mean(head(total_sd, 10) > 1.644854)
+hund_sd <- mean(head(total_sd, 100) > 1.644854)
+thou_sd <- mean(head(total_sd, 1000) > 1.644854)
+tentho_sd <- mean(head(total_sd, 10000) > 1.644854)
+```
+
+The percentiles of elements that are above 1.644854 of the first 10, 100, 1000,
+10000 elements of the standarized vector are `r ten_sd`, `r hund_sd`, 
+`r thou_sd`, `r tentho_sd`. The larger the sample size gets, the closer that the
+percentile gets to the expected percentile.
+
+#1f.
+```{r, eval = TRUE, echo = TRUE}
+# calculate the percentile of the given value in my random simulation of Normal
+# distribution. then standarize the given value and calculate the percentile of
+# the standarized value in the standarized simulation.
+f_percentile <- mean(randNorm < 13.86)
+f_standard <- (13.86 - mean(randNorm)) / sd(randNorm)
+f_sd_percentile <- mean(total_sd < f_standard)
+```
+The percentile of 13.86 in my random simulation of Normal distribution
+is `r f_percentile` and the percentile of the standarized value `r f_standard`
+in my standarized simulation is `r f_sd_percentile`. 
+The two values are the same.
+
+#1g.
+```{r, eval = TRUE, echo = TRUE}
+extreme <- 2 * pnorm(f_standard, lower.tail = FALSE)
+```
+I expect the percentile of simulations from an expected standard Normal
+distribution that is more extreme than the standarized value to be about 2 times
+1 minus the the percentile of the standarized value in my standarized 
+simulation. The expected percentile is `r extreme`.
+
+#1h.
+It is not very likely that the value given was drawn from the same distribution
+as my simulations, that is, from Normal(7, 3). The value is more than 2 times 
+the standard deviation larger than the mean, so it is very unlikely that this
+number would be simulated from N(7, 3).
+
+
+## Part 2.
+
+#2a.
+```{r, eval = TRUE, echo = TRUE}
+# create two empty matrices, the smaller one with 100 rows and the larger one
+# with 100000 rows, both of the matrices with 4 columns.
+my_matrix_s <- matrix(, nrow = 100, ncol = 4)
+my_matrix_l <- matrix(, nrow = 100000, ncol = 4)
+```
+
+#2b.
+```{r, eval = TRUE, echo = TRUE}
+# create random Binomial distributions with n = 5 (size) and probability of 0.2,
+# 0.4, 0.6, 0.8 respectively, save the simulations in different vectors. fill 
+# the matrices with random simulations of different number of trials (size = 100
+# for the small matrix and 100000 for the large matrix). print first five rows
+# of both matrix.
+my_vector_s1 <- c(rbinom(100, 5, 0.2))
+my_vector_s2 <- c(rbinom(100, 5, 0.4))
+my_vector_s3 <- c(rbinom(100, 5, 0.6))
+my_vector_s4 <- c(rbinom(100, 5, 0.8))
+my_matrix_s[, 1] <- my_vector_s1
+my_matrix_s[, 2] <- my_vector_s2
+my_matrix_s[, 3] <- my_vector_s3
+my_matrix_s[, 4] <- my_vector_s4
+
+my_vector_l1 <- c(rbinom(100000, 5, 0.2))
+my_vector_l2 <- c(rbinom(100000, 5, 0.4))
+my_vector_l3 <- c(rbinom(100000, 5, 0.6))
+my_vector_l4 <- c(rbinom(100000, 5, 0.8))
+my_matrix_l[, 1] <- my_vector_l1
+my_matrix_l[, 2] <- my_vector_l2
+my_matrix_l[, 3] <- my_vector_l3
+my_matrix_l[, 4] <- my_vector_l4
+
+my_matrix_s[1:5, ]
+my_matrix_l[1:5, ]
+```
+
+#2c.
+For both of the two matrices, the larger the probability get, the larger that 
+the largest proportion of elements get. In other words, the curves shift to the
+right as the probability gets larger. Comparing the two matrices, the larger
+matrix which has more elements displays the characteristics better.
+```{r, eval = TRUE, echo = TRUE}
+# create 8 histograms of the columns respectively.
+hist(my_vector_s1, main = paste("First column of small matrix"), 
+     xlab = "value", breaks = 11)
+hist(my_vector_s2, main = paste("Second column of small matrix"), 
+     xlab = "value", breaks = 11)
+hist(my_vector_s3, main = paste("Third column of small matrix"), 
+     xlab = "value", breaks = 11)
+hist(my_vector_s4, main = paste("Fourth column of small matrix"),
+     xlab = "value", breaks = 11)
+
+hist(my_vector_l1, main = paste("First column of large matrix"), 
+     xlab = "value", breaks = 11)
+hist(my_vector_l2, main = paste("Second column of large matrix"), 
+     xlab = "value", breaks = 11)
+hist(my_vector_l3, main = paste("Third column of large matrix"), 
+     xlab = "value", breaks = 11)
+hist(my_vector_l4, main = paste("Fourth column of large matrix"),
+     xlab = "value", breaks = 11)
+```
+
+#2d.
+```{r, eval = TRUE, echo = TRUE}
+# calculate the mean value of each column for both matrices, and put the results
+# in a table.
+mean_s1 <- mean(my_vector_s1)
+mean_s2 <- mean(my_vector_s2)
+mean_s3 <- mean(my_vector_s3)
+mean_s4 <- mean(my_vector_s4)
+mean_l1 <- mean(my_vector_l1)
+mean_l2 <- mean(my_vector_l2)
+mean_l3 <- mean(my_vector_l3)
+mean_l4 <- mean(my_vector_l4)
+mean_table <- matrix(c(mean_s1, mean_s2, mean_s3, mean_s4, mean_l1, mean_l2,
+                       mean_l3, mean_l4), ncol=2, byrow = FALSE)
+rownames(mean_table) <- c("First column", "Second column", "Third column", 
+                          "Fourth column")
+colnames(mean_table) <- c("Matrix of 100 rows", "Matrix of 100000 rows")
+mean_table <- as.table(mean_table)
+mean_table
+```
+
+#2e.
+The expected column mean of each column should be n (size) times probability, 
+which would be 1, 2, 3, 4 respectively for each columns of both matrices. The
+larger matrix has observed column means that are closer to the expectation. 
+This is because that the larger the sample size gets, the less that the outliers
+would effect the whole data set.
+
+#2f.
+Compared to the trial of n = 5, the characteristics that the curves shift to the
+right as the probability gets larger remains unchanged. Comparing the modified
+two matrices, the larger modified matrix display this characteristics clearer 
+than the smaller modified matrix.
+```{r, eval = TRUE, echo = TRUE}
+# create two empty matrices, the smaller one with 100 rows and the larger one
+# with 100000 rows, both of the matrices with 4 columns.
+# create random Binomial distributions with n = 1000 (size) and probability of 
+# 0.2, 0.4, 0.6, 0.8 respectively, save the simulations in different vectors. 
+# fill the matrices with random simulations of different number of trials 
+# (size = 100 for the small matrix and 100000 for the large matrix). 
+# print first five rows.
+# of both matrix.
+# create 8 histograms of the columns respectively.
+# calculate the mean value of each column for both matrices, and put the results
+# in a table.
+
+mod_matrix_s <- matrix(1:400, nrow = 100, ncol = 4)
+mod_matrix_l <- matrix(1:400000, nrow = 100000, ncol = 4)
+
+mod_vector_s1 <- c(rbinom(100, 1000, 0.2))
+mod_vector_s2 <- c(rbinom(100, 1000, 0.4))
+mod_vector_s3 <- c(rbinom(100, 1000, 0.6))
+mod_vector_s4 <- c(rbinom(100, 1000, 0.8))
+mod_matrix_s[, 1] <- mod_vector_s1
+mod_matrix_s[, 2] <- mod_vector_s2
+mod_matrix_s[, 3] <- mod_vector_s3
+mod_matrix_s[, 4] <- mod_vector_s4
+
+mod_vector_l1 <- c(rbinom(100000, 1000, 0.2))
+mod_vector_l2 <- c(rbinom(100000, 1000, 0.4))
+mod_vector_l3 <- c(rbinom(100000, 1000, 0.6))
+mod_vector_l4 <- c(rbinom(100000, 1000, 0.8))
+mod_matrix_l[, 1] <- mod_vector_l1
+mod_matrix_l[, 2] <- mod_vector_l2
+mod_matrix_l[, 3] <- mod_vector_l3
+mod_matrix_l[, 4] <- mod_vector_l4
+
+mod_matrix_s[1:5, ]
+mod_matrix_l[1:5, ]
+
+hist(mod_vector_s1, main = paste("First column of small matrix"), 
+     xlab = "value", breaks = 110)
+hist(mod_vector_s2, main = paste("Second column of small matrix"), 
+     xlab = "value", breaks = 110)
+hist(mod_vector_s3, main = paste("Third column of small matrix"), 
+     xlab = "value", breaks = 110)
+hist(mod_vector_s4, main = paste("Fourth column of small matrix"),
+     xlab = "value", breaks = 110)
+
+hist(mod_vector_l1, main = paste("First column of large matrix"), 
+     xlab = "value", breaks = 110)
+hist(mod_vector_l2, main = paste("Second column of large matrix"), 
+     xlab = "value", breaks = 110)
+hist(mod_vector_l3, main = paste("Third column of large matrix"), 
+     xlab = "value", breaks = 110)
+hist(mod_vector_l4, main = paste("Fourth column of large matrix"),
+     xlab = "value", breaks = 110)
+
+mod_mean_s1 <- mean(mod_vector_s1)
+mod_mean_s2 <- mean(mod_vector_s2)
+mod_mean_s3 <- mean(mod_vector_s3)
+mod_mean_s4 <- mean(mod_vector_s4)
+mod_mean_l1 <- mean(mod_vector_l1)
+mod_mean_l2 <- mean(mod_vector_l2)
+mod_mean_l3 <- mean(mod_vector_l3)
+mod_mean_l4 <- mean(mod_vector_l4)
+mod_mean_table <- matrix(c(mod_mean_s1, mod_mean_s2, mod_mean_s3, mod_mean_s4, 
+                           mod_mean_l1, mod_mean_l2, mod_mean_l3, mod_mean_l4),
+                         ncol=2, byrow = FALSE)
+rownames(mod_mean_table) <- c("First column", "Second column", "Third column", 
+                          "Fourth column")
+colnames(mod_mean_table) <- c("Matrix of 100 rows", "Matrix of 100000 rows")
+mod_mean_table <- as.table(mod_mean_table)
+```
+
+#2g.
+The larger matrix has more extreme maxs and mins. The reason should be that the 
+larger the sample size is, the chances of generating extreme values would be 
+greater.
+```{r, eval = TRUE, echo = TRUE}
+# create five-number summaries of each column in both matrices (with summary 
+# method but excluding the mean value). create a table of the 5-number summary.
+sum_s1 <- summary(mod_vector_s1)[-4]
+sum_s2 <- summary(mod_vector_s2)[-4]
+sum_s3 <- summary(mod_vector_s3)[-4]
+sum_s4 <- summary(mod_vector_s4)[-4]
+sum_l1 <- summary(mod_vector_l1)[-4]
+sum_l2 <- summary(mod_vector_l2)[-4]
+sum_l3 <- summary(mod_vector_l3)[-4]
+sum_l4 <- summary(mod_vector_l4)[-4]
+
+sum_table <- rbind(sum_s1, sum_s2, sum_s3, sum_s4, sum_l1, sum_l2, sum_l3,
+                   sum_l4)
+colnames(sum_table) <- c("Min", "First Quantile", "Median", "Third Quantile", 
+                         "Max")
+rownames(sum_table) <- c("First col of small matrix", 
+                         "Second col of small matrix", 
+                         "Third col of small matrix", 
+                         "Fourth col of small matrix", 
+                         "First col of large matrix", 
+                         "Second col of large matrix", 
+                         "Third col of large matrix", 
+                         "Fourth col of large matrix")
+sum_table <- as.table(sum_table)
+sum_table
+```
+
+
+
+

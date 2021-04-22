@@ -1,0 +1,203 @@
+<!--- Please do not touch the code below! It is for styling. --->
+<style type="text/css">
+/* Whole document: */
+body{
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 12pt;
+}
+h1.title {
+  font-size: 38px;
+  text-align: center;
+}
+h4.author {
+  font-size: 18px;
+  text-align: center;
+}
+h4.date {
+  font-size: 18px;
+  text-align: center;
+}
+</style>
+<!--- Begin here! Fill in text and R code for each of these questions. --->
+
+---
+title: "Short Lab 2"
+author: "Sylvia Du"
+date: "1/15/2020"
+output: html_document
+---
+
+As usual, all code below should follow the style guidelines from the lecture slides.
+
+### Part A. Control Flow
+
+1. 
+    a. Write a function that returns a Boolean indicating whether the input is numeric or not.
+    b. Evaluate your function with input that returns `TRUE`
+    c. Evaluate your function with input that returns `FALSE`
+
+#a
+```{r eval = TRUE, echo = TRUE}
+# function: check_numeric, checks if the input is numeric and returns a Boolean
+#           indicating the result.
+# input: x
+# output: Boolean
+check_numeric <- function(x) {
+    return(is.numeric(x))
+}
+```
+
+#b
+```{r eval = TRUE, echo = TRUE}
+# let input be a number and check if it is numeric. if returns TRUE, the 
+# function works.
+a <- 3
+check_numeric(a)
+```
+
+#c
+```{r eval = TRUE, echo = TRUE}
+# let input be a string and check if it is numeric. if returns FALSE, the 
+# function works.
+b <- "cat"
+check_numeric(b)
+```
+
+2. 
+    a. Write a function returns the absolute value of the input. This function should check to make sure the input is numeric. 
+If the input is not numeric, it should `stop` with an informative error message.
+    b. Evaluate your function with positive numeric input.
+    c. Evaluate your function with negative numeric input.
+    d. Trigger your custom error message. Note: You will need to add the parameter 
+`error = TRUE` to your R Markdown code chunk. If you do not, your document will not compile!
+
+#a
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# function: abs_val, first checks if input is numeric and returns its absolute 
+#           value if it is and print error message if it is not.
+# input: x
+# output: numeric result equals absolute value of x
+abs_val <- function(x) {
+    if (is.numeric(x)) {
+        if (x >= 0) {
+            return(x)
+        } else {
+            return(-x)
+        }
+    } else {
+        cat("x is not numeric!")
+    }
+}
+```
+
+#b
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# evaluating the function
+# let input be positive number and check if its absolute value equals itself.
+# if equals, the function works
+x <- 7
+x == abs_val(x)
+```
+
+#c
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# evaluating the function
+# let input be negative number and check if its absolute value equals itself.
+# if does not equal, the function works
+y <- -7
+y == abs_val(y)
+```
+
+#d
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# evaluating the function
+# let input be non-numeric and check if the function works.
+# if prints error message, the function works
+z <- "string"
+abs_val(z)
+```
+
+### Part B. Loops
+
+3. Write and demonstrate a function that loops through a numeric input vector
+and returns a numeric vector of the same length, where the $i$th element of the output is equal to the sum of the first $i$ elements of the input. (Hint: The first element of the output should match the first element of the input. The last element of the output should match the sum of the elements of the input.)
+
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# function: sum_loop, sum up the first i elements of input and put the sum as 
+#           ith element of output
+# input: vector x, must be numeric
+# output: numeric vector s
+sum_loop <- function(x) {
+    # check if input is numeric
+    if (!is.numeric(x)) {
+        cat("input must be numeric")
+    } else {
+        s <- rep(NA, length(x))
+        my_sum <- 0
+        for (i in 1:length(x)) {
+            my_sum <- my_sum + x[i]
+            s[i] <- my_sum
+        }
+        return(s)
+    }
+}
+```
+
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# evaluating the function
+# if function works, return vector (1, 3, 6, 10)
+sum_loop(c(1, 2, 3, 4))
+```
+
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# evaluating the function
+# if function works, print error message "input must be numeric"
+sum_loop(c("a", "b"))
+```
+
+
+4. Write and demonstrate a function that loops through each element of a matrix and replaces each element with the row index minus the column index. (Hint: use `ncol()` and `nrow()`)
+
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# function: modify_matrix, check if matrix valid; if so, modify each matrix 
+#           element to the row index minus the column index; if not, print
+#           error message
+# input: matrix x
+# output: numeric matrix x
+modify_matrix <- function(x) {
+    # check if matrix valid
+    if (nrow(x) > 0 && ncol(x) > 0){
+        for (i in 1:nrow(x)) {
+            for (j in 1:ncol(x)) {
+                x[i, j] <- i - j
+            }
+        }
+        return(x)
+    } else {
+        cat("input not valid")
+    }
+}
+```
+
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# evaluating the function
+# if function works, return matrix (0 -1 -2; 1 0 -1; 2 1 0; 3 2 1)
+m <- matrix(NA, nrow = 4, ncol = 3)
+modify_matrix(m)
+```
+
+```{r eval = TRUE, echo = TRUE, error = TRUE}
+# evaluating the function
+# if function works, print error message "input not valid"
+n <- matrix(NA, nrow = 0, ncol = 0)
+modify_matrix(n)
+```
+
+
+
+
+
+
+
+
+
