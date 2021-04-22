@@ -1,0 +1,195 @@
+---
+title: "Short Lab 6"
+author: "Sylvia Du"
+date: "2/26/2020"
+output: html_document
+---
+<!--- Begin styling code. --->
+<style type="text/css">
+/* Whole document: */
+body{
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 12pt;
+}
+h1.title {
+  font-size: 38px;
+  text-align: center;
+}
+h4.author {
+  font-size: 18px;
+  text-align: center;
+}
+h4.date {
+  font-size: 18px;
+  text-align: center;
+}
+</style>
+<!--- End styling code. --->
+
+
+## Part 1. Training and Test Error
+
+Use the following code to generate data:
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+library(ggpubr)
+# generate data
+set.seed(302)
+n <- 30
+x <- sort(runif(n, -3, 3))
+y <- 2*x + 2*rnorm(n)
+x_test <- sort(runif(n, -3, 3))
+y_test <- 2*x_test + 2*rnorm(n)
+df_train <- data.frame("x" = x, "y" = y)
+df_test <- data.frame("x" = x_test, "y" = y_test)
+
+# store a theme
+my_theme <- theme_bw(base_size = 16) + 
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5))
+
+# generate plots
+g_train <- ggplot(df_train, aes(x = x, y = y)) + geom_point() +
+  xlim(-3, 3) + ylim(min(y, y_test), max(y, y_test)) + 
+  labs(title = "Training Data") + my_theme
+g_test <- ggplot(df_test, aes(x = x, y = y)) + geom_point() +
+  xlim(-3, 3) + ylim(min(y, y_test), max(y, y_test)) + 
+  labs(title = "Test Data") + my_theme
+ggarrange(g_train, g_test) # from ggpubr, to put side-by-side
+```
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# import the library that could be used in this shortlab
+library(tidyverse)
+```
+
+**1a.** For every k in between 1 and 10, fit a degree-k polynomial linear regression model with `y` as the response and `x` as the explanatory variable(s).
+(*Hint: Use *`poly()`*, as in the lecture slides.*)
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# fit 10 polynomial linear regression models with degree 1 to 10 respectively
+# compute y prediction for each model with respect to training data
+lm_fit_1 <- lm(y ~ x, data = df_train)
+yh_train_1 <- lm_fit_1 %>% predict()
+
+lm_fit_2 <- lm(y ~ poly(x, 2), data = df_train)
+yh_train_2 <- lm_fit_2 %>% predict()
+
+lm_fit_3 <- lm(y ~ poly(x, 3), data = df_train)
+yh_train_3 <- lm_fit_3 %>% predict()
+
+lm_fit_4 <- lm(y ~ poly(x, 4), data = df_train)
+yh_train_4 <- lm_fit_4 %>% predict()
+
+lm_fit_5 <- lm(y ~ poly(x, 5), data = df_train)
+yh_train_5 <- lm_fit_5 %>% predict()
+
+lm_fit_6 <- lm(y ~ poly(x, 6), data = df_train)
+yh_train_6 <- lm_fit_6 %>% predict()
+
+lm_fit_7 <- lm(y ~ poly(x, 7), data = df_train)
+yh_train_7 <- lm_fit_7 %>% predict()
+
+lm_fit_8 <- lm(y ~ poly(x, 8), data = df_train)
+yh_train_8 <- lm_fit_8 %>% predict()
+
+lm_fit_9 <- lm(y ~ poly(x, 9), data = df_train)
+yh_train_9 <- lm_fit_9 %>% predict()
+
+lm_fit_10 <- lm(y ~ poly(x, 10), data = df_train)
+yh_train_10 <- lm_fit_10 %>% predict()
+
+# put all y predictions into one data frame
+yh_train <- data.frame(cbind(yh_train_1, yh_train_2, yh_train_3, yh_train_4, 
+                             yh_train_5, yh_train_6, yh_train_7, yh_train_8, 
+                             yh_train_9, yh_train_10))
+```
+
+**1b.** For each model from (a), record the training error. Then predict `y_test` using `x_test` and also record the test error.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# initialize train_err and test_err, each is a vector with length 10
+train_err <- c(rep(NA, 10))
+test_err <- c(rep(NA, 10))
+
+# using the previous models with degrees from 1 to 10,
+# compute y prediction for each model with respect to test data
+yh_test_1 <- predict(lm_fit_1, data.frame(x = df_test$x))
+yh_test_2 <- predict(lm_fit_2, data.frame(x = df_test$x))
+yh_test_3 <- predict(lm_fit_3, data.frame(x = df_test$x))
+yh_test_4 <- predict(lm_fit_4, data.frame(x = df_test$x))
+yh_test_5 <- predict(lm_fit_5, data.frame(x = df_test$x))
+yh_test_6 <- predict(lm_fit_6, data.frame(x = df_test$x))
+yh_test_7 <- predict(lm_fit_7, data.frame(x = df_test$x))
+yh_test_8 <- predict(lm_fit_8, data.frame(x = df_test$x))
+yh_test_9 <- predict(lm_fit_9, data.frame(x = df_test$x))
+yh_test_10 <- predict(lm_fit_10, data.frame(x = df_test$x))
+
+# put all y predictions into one data frame
+yh_test <- data.frame(cbind(yh_test_1, yh_test_2, yh_test_3, yh_test_4, 
+                             yh_test_5, yh_test_6, yh_test_7, yh_test_8, 
+                             yh_test_9, yh_test_10))
+
+# compute training error and test error of each model, put values into vectors
+for (i in 1:10) {
+  train_err[i] <- mean((df_train$y - yh_train[, i])^2)
+  test_err[i] <- mean((df_test$y - yh_test[, i])^2)
+}
+```
+
+
+**1c.** Present the 10 values for both training error and test error on a single table. Comment on what you notice about the relative magnitudes of training and test error, as well as the trends in both types of error as $k$ increases.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# show the training error and test error data as a data frame
+data.frame(train_err, test_err)
+```
+As $k$ increases, training error becomes smaller and test error become greater in general. Also, test error is always greater than the training error with same $k$.
+
+
+**1d.** If you were going to choose a model based on training error, which would you choose? Plot the data, colored by split. Add a line to the plot representing your selection for model fit. Add a subtitle to this plot with the (rounded!) test error.
+(*Hint: You can use as much of my code as you want for this and part (e). See Lecture Slides 8!*)
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# add column split to training data and test data, categorize the two data sets
+# by "Training" and "Test", then combine the data sets into a data frame
+data_1 <- df_train
+data_1$split <- rep("Training", 30)
+data_2 <- df_test
+data_2$split <- rep("Test", 30)
+data <- rbind(data_1, data_2)
+
+# compute the fitting line of the degree 10 model choice based on training error
+x_fit <- data.frame(x = seq(-3, 3, length = 100))
+line_fit_10 <- data.frame(x = x_fit, y = predict(lm_fit_10, newdata = x_fit))
+
+# create and show plot of the degree 10 model choice based on training error
+g_split_10 <- ggplot(data, aes(x = x, y = y, color = split)) + geom_point() +
+  labs(title = "Linear Model Based On Training Error", 
+       subtitle = paste("Degree 10 Training error:", round(train_err[10], 3))) + 
+  geom_line(data = line_fit_10, aes(y = y, x = x), col = "red", lwd = 1.5) +
+  my_theme
+g_split_10
+```
+
+**1e.** If you were going to choose a model based on test error, which would you choose? Plot the data, colored by split. Add a line to the plot representing your selection for model fit. Add a subtitle to this plot with the (rounded!) test error.
+
+```{r, eval = TRUE, echo = TRUE, message = FALSE}
+# compute the fitting line of the degree 1 model choice based on test error
+line_fit_1 <- data.frame(x = x_fit, y = predict(lm_fit_1, newdata = x_fit))
+
+# create and show plot of the degree 1 model choice based on test error
+g_split_1 <- ggplot(data, aes(x = x, y = y, color = split)) + geom_point() +
+  labs(title = "Linear Model Based On Test Error", 
+       subtitle = paste("Degree 1 Test error:", round(test_err[1], 3))) + 
+  geom_line(data = line_fit_1, aes(y = y, x = x), col = "red", lwd = 1.5) +
+  my_theme
+g_split_1
+```
+
+**1f.** What do you notice about the shape of the curves from part (d) and (e)? Which model do you think has lower bias? Lower variance? Why?
+
+The plot from (d) has a very curly curve and the plot from (e) is linear.
+
+The plot based on traing error is overfitting while the plot based on test error is a little underfitting. The plot based on training error should have lower bias and the plot based on test error should have lower variance. Because the smaller the training error is, the larger the test error is in general. Large test error implies that the model is overfitted and therefore is with higher variance, but it also has small training error which implies that the model fits well on the original data so that it has lower bias.
+
